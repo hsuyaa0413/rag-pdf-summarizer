@@ -2,7 +2,7 @@ import { DataAPIClient } from "@datastax/astra-db-ts"
 import { GoogleGenAI } from "@google/genai"
 
 import { google } from "@ai-sdk/google"
-import { convertToModelMessages, generateText, streamText, UIMessage } from "ai"
+import { convertToModelMessages, streamText, UIMessage } from "ai"
 
 import "dotenv/config"
 
@@ -16,7 +16,6 @@ const {
 
 const ai = new GoogleGenAI({ apiKey: GOOGLE_GENERATIVE_AI_API_KEY })
 
-// Get the database
 const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN)
 const db = client.db(`${ASTRA_DB_API_ENDPOINT}`, {
   namespace: ASTRA_DB_NAMESPACE,
@@ -25,13 +24,18 @@ const db = client.db(`${ASTRA_DB_API_ENDPOINT}`, {
 export async function POST(request: Request) {
   try {
     const { messages }: { messages: UIMessage[] } = await request.json()
-    const latestMessage = messages[messages.length - 1]
+    const latestMessage = messages[messages.length - 1].parts
+      .filter(
+        (part): part is { type: "text"; text: string } => part.type === "text"
+      )
+      .map(part => part.text)
+      .join("")
 
     let docContext = ""
 
     const embeddedContents = await ai.models.embedContent({
       model: "gemini-embedding-001",
-      contents: latestMessage.parts.join(" "),
+      contents: latestMessage,
       config: {
         outputDimensionality: 768,
       },
@@ -71,15 +75,17 @@ Document Context:
 ${docContext}
 -----------------
 
-User Question:
-${latestMessage.parts.join(" ")}
+Question:
+-----------------
+${latestMessage}
+-----------------
 
 Instructions:
 - Use ONLY the information from the document context.
-- If the answer is not present in the context, clearly say: 
+- If the answer is not present in the context, clearly say:
   "I couldn't find this information in the uploaded document."
 - Keep the response clear, concise, and easy to understand.
-- If helpful, use bullet points or short paragraphs.
+- Use bullet points or very short paragraphs.
 - Do NOT make assumptions or add external knowledge.
 `
 
@@ -89,16 +95,7 @@ Instructions:
       messages: convertToModelMessages(messages),
     })
 
-    // const { text } = await generateText({
-    //   model: google("gemini-2.5-flash"),
-    //   prompt: systemPrompt,
-    // })
-
-    console.log(result)
-
-    return new Response(
-      JSON.stringify({ text: result.toUIMessageStreamResponse() })
-    )
+    return result.toUIMessageStreamResponse()
   } catch (error) {
     console.error("Error in chat route:", error)
     return new Response(

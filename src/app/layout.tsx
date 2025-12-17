@@ -2,6 +2,8 @@ import type { Metadata } from "next"
 import { Geist as FontSans } from "next/font/google"
 import "./globals.css"
 import { cn } from "@/lib/utils"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -22,11 +24,23 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          "font-sans antialiased mx-auto selection:text-darkBlue selection:bg-greyBlue",
+          "font-sans antialiased mx-auto selection:text-darkBlue selection:bg-greyBlue min-h-screen flex flex-col",
           fontSans.variable
         )}
       >
-        {children}
+        <main className="flex-1 relative z-10">{children}</main>
+        <footer className="relative z-20 py-6 text-center text-sm text-neutral-500 dark:text-neutral-400 border-t border-neutral-100 dark:border-neutral-800 bg-white/50 dark:bg-black/20 backdrop-blur-sm">
+          Built by{" "}
+          <Link
+            href="https://dhungelaayush.com.np"
+            target="_blank"
+            className="font-semibold text-neutral-800 dark:text-neutral-200"
+          >
+            <Button className="p-0 m-0" variant="link">
+              aayushDhungel
+            </Button>
+          </Link>
+        </footer>
       </body>
     </html>
   )

@@ -58,14 +58,11 @@ export const FileUpload = ({
   })
 
   return (
-    <div
-      className="w-3xl rounded-md bg-blue-700 border-2 border-dashed"
-      {...getRootProps()}
-    >
+    <div className="w-full" {...getRootProps()}>
       <motion.div
         onClick={handleClick}
         whileHover="animate"
-        className="p-10 group/file block rounded-lg cursor-pointer w-full relative overflow-hidden"
+        className="p-10 group/file block rounded-lg cursor-pointer w-full relative overflow-hidden border border-dashed border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black/20"
       >
         <input
           ref={fileInputRef}
@@ -76,10 +73,10 @@ export const FileUpload = ({
           className="hidden"
         />
         <div className="flex flex-col items-center justify-center">
-          <p className="relative z-20 font-sans font-bold text-white text-base">
+          <p className="relative z-20 font-sans font-bold text-neutral-700 dark:text-neutral-300 text-base">
             Upload file
           </p>
-          <p className="relative z-20 font-sans font-normal text-neutral-300 text-base mt-2">
+          <p className="relative z-20 font-sans font-normal text-neutral-400 dark:text-neutral-400 text-base mt-2">
             Drag or drop your PDF here or click to upload
           </p>
           <div className="relative w-full mt-10 max-w-xl mx-auto">
