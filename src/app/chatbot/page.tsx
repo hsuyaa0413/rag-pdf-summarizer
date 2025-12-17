@@ -1,10 +1,14 @@
 "use client"
+import Chatbot from "@/components/Chatbot"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 
 const ChatPage = () => {
   const router = useRouter()
+
+  const searchParams = useSearchParams()
+  const pdfUrl = searchParams?.get("pdf_url")
 
   return (
     <div className="w-full">
@@ -22,19 +26,18 @@ const ChatPage = () => {
           Back to Upload
         </Button>
 
-        {/* Body */}
         <div className="grid grid-cols-5 h-[80vh]">
           <div className="col-span-3">
             <object
-              data="https://res.cloudinary.com/delchtyqv/image/upload/v1733686722/zg8nvapfro9dlramraid.pdf"
+              data={pdfUrl || ""}
               type="application/pdf"
               className="w-full h-[80vh] rounded-bl-lg"
             />
           </div>
 
-          {/* Candidate Info Panel */}
-          <div className="col-span-2 bg-blue-100 p-6 overflow-y-auto rounded-r-lg">
-            <h2 className="text-2xl font-bold mb-4">Chatbot</h2>
+          {/* chatbot */}
+          <div className="col-span-2 h-full bg-blue-100 p-6 overflow-y-auto rounded-r-lg">
+            <Chatbot />
           </div>
         </div>
       </div>
